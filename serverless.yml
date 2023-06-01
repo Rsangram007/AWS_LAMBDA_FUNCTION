@@ -1,0 +1,56 @@
+service: sangramApi
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - dynamodb:*
+      Resource: arn:aws:dynamodb:ap-south-1:397611673480:table/TodoTables
+
+
+functions:
+  AddTodo:
+    handler: src/singlepage.Addtodo 
+    events:
+      - http:
+          path: /
+          method: post
+  FetchTodo:
+    handler: src/singlepage.Fetchtodo 
+    events:
+      - http:
+          path: /
+          method: get
+  FetchTodoById:
+    handler: src/singlepage.FetchtodoById 
+    events:
+      - http:
+          path: /{ID}
+          method: get
+  UpdateTodo:
+    handler: src/singlepage.UpdateTodo
+    events:
+      - http:
+          path: /{ID}
+          method: put
+ 
+
+        
+
+resources:
+  Resources:
+    TodoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TodoTables
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
